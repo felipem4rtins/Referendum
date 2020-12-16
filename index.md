@@ -1,12 +1,15 @@
 <html>
     <body>
         <div>
-  			<p>Você é a favor do(a) <a id='subject'></a>?</p>
+  			<p>Pergunta: <a id='subject'></a></p>
   			<button id='voteYes'>Sim</button>
   			<button id='voteNo'>Não</button>
   			<p>Conta Conectada: <a id='coinbase'></a></p>
 			<p>Número do Bloco Atual: <a id='blockNumber'></a></p>
 			<p>Endereço do Contrato: <a id='address'></a></p>
+      <p>Votos a favor: <a id='yes'></a></p>
+      <p>Votos contra: <a id='no'></a></p>
+      <p>Total de votos: <a id='totalVotes'></a></p>
 	    </div>
 
 		<!-- To use web3, jquery and materialize (for toast warnings) libs -->
@@ -45,12 +48,26 @@
 
 				/////////////////////////////
 				// Sample of a contract's address deployed in Ropsten test network
-				 var address = "0xeCF9e79d6d9214B29cA6988Cb2b88e09123ceD34"
+				 var address = "0x81A2245B808ca7dDE5a78053a2e80F5f4c496A6d"
 				// Deployed Contract's Adress, substitute here with your contract's address
 				// var address = "0xB40dCa2c4b6B84C1131eBDdCf3df6D2f294B0ba8"
 				$('#address').html(address)
 				// Deployed Contract's ABI
 				var abi = [
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "Reveal",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"constant": false,
 		"inputs": [],
@@ -80,7 +97,7 @@
 				"type": "uint256"
 			},
 			{
-				"name": "_minVotos",
+				"name": "_maxVotes",
 				"type": "uint256"
 			}
 		],
@@ -91,21 +108,7 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "GetMinVotos",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "GetReferendumEnd",
+		"name": "GetNo",
 		"outputs": [
 			{
 				"name": "",
@@ -133,11 +136,39 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "Reveal",
+		"name": "GetTotal",
 		"outputs": [
 			{
 				"name": "",
-				"type": "string"
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "GetYes",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "StagePrint",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint8"
 			}
 		],
 		"payable": false,
@@ -171,6 +202,18 @@
                 {
                     $('#subject').html(subject);
                 })
+                contract.methods.GetYes().call().then(function(yes)
+                {
+                    $('#yes').html(yes);
+                })
+                contract.methods.GetNo().call().then(function(no)
+                {
+                    $('#no').html(no);
+                })
+                contract.methods.GetTotal().call().then(function(totalVotes)
+                {
+                    $('#totalVotes').html(totalVotes);
+                })
 			})
 
 			$('#voteYes').click(function()
@@ -192,7 +235,7 @@
 						alert('Some error has occurred, go to console!')
 					}
 					console.log(tx);
-					M.toast({html:tx})
+					//M.toast({html:tx})
 				})
 			})
 
@@ -215,7 +258,7 @@
 						alert('Some error has occurred, go to console!')
 					}
 					console.log(tx);
-					M.toast({html:tx})
+					//M.toast({html:tx})
 				})
 			})
         </script>
