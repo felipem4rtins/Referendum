@@ -1,9 +1,9 @@
 <html>
     <body>
         <div>
-  			<p><font size="4">Você é a favor do(a) <a id='subject'>?</a></p>
-  			<button id='voteYes'><font size="4">Sim</button>
-  			<button id='voteNo'><font size="4">Não</button>
+  			<p><font size="3">Você é a favor do(a) <a id='subject'></a>?</p>
+  			<button id='voteYes'><font size="3">Sim</button>
+  			<button id='voteNo'><font size="3">Não</button>
   			<p>Conta Conectada: <a id='coinbase'></a></p>
 			<p>Número do Bloco Atual: <a id='blockNumber'></a></p>
 			<p>Endereço do Contrato: <a id='address'></a></p>
