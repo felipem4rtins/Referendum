@@ -1,250 +1,224 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=640">
+<html>
+    <body>
+        <div>
+			<p>Referendo</p>
+  			<p>Voto: <a id='subject'></a></p>
+  			<button id='voteYes'>Sim</button>
+  			<button id='voteNo'>Não</button>
+  			<p>Conta Conectada: <a id='coinbase'></a></p>
+			<p>Número do Bloco Atual: <a id='blockNumber'></a></p>
+			<p>Endereço do Contrato: <a id='address'></a></p>
+	    </div>
 
-    <link rel="stylesheet" href="/merlot/assets/css/style.css?v=ed40451a379fdc50aea40ce66299a518ea6aea9c" media="screen">
-    <link rel="stylesheet" href="/merlot/assets/css/mobile.css" media="handheld, only screen and (max-device-width:640px)">
-    <link rel="stylesheet" href="/merlot/assets/css/non-screen.css" media="handheld, only screen and (max-device-width:640px)">
+		<!-- To use web3, jquery and materialize (for toast warnings) libs -->
+		<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
-    <script src="/merlot/assets/js/modernizr.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="/merlot/assets/js/headsmart.min.js"></script>
-    <script>
-      $(document).ready(function () {
-        $('#main_content').headsmart()
-      })
-    </script>
+        <script>
+			var contract;
+            $(document).ready(function(){
+				// making conection with blockchain
+				if (typeof web3 !== 'undefined') {
+                    // Use MetaMask's provider
+                    web3 = new Web3(web3.currentProvider);
 
-<!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>Merlot theme | Merlot is a theme for GitHub Pages.</title>
-<meta name="generator" content="Jekyll v3.9.0" />
-<meta property="og:title" content="Merlot theme" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="Merlot is a theme for GitHub Pages." />
-<meta property="og:description" content="Merlot is a theme for GitHub Pages." />
-<link rel="canonical" href="https://pages-themes.github.io/merlot/" />
-<meta property="og:url" content="https://pages-themes.github.io/merlot/" />
-<meta property="og:site_name" content="Merlot theme" />
-<script type="application/ld+json">
-{"description":"Merlot is a theme for GitHub Pages.","@type":"WebSite","headline":"Merlot theme","url":"https://pages-themes.github.io/merlot/","name":"Merlot theme","@context":"https://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
+                } else {
+			    // Use localhost provider or some IP address
+                    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+                }
 
-  </head>
+				/////////////////////////////
+				// To see on console
+				web3.eth.getAccounts().then(console.log);
+				web3.eth.getBlockNumber().then(console.log);
+				web3.eth.isMining().then(console.log);
 
-  <body>
-    <a id="forkme_banner" href="https://github.com/pages-themes/merlot">View on GitHub</a>
-    <div class="shell">
+        // Create variables to use on html page
+				web3.eth.getCoinbase().then(function(coinbase){
+					$('#coinbase').html(coinbase);
+				})
 
-      <header>
-        <span class="ribbon-outer">
-          <span class="ribbon-inner">
-            <h1>Merlot theme</h1>
-            <h2>Merlot is a theme for GitHub Pages.</h2>
-          </span>
-          <span class="left-tail"></span>
-          <span class="right-tail"></span>
-        </span>
-      </header>
+				// Create variables to use on html page
+				web3.eth.getBlockNumber().then(function(blockNumber){
+					$('#blockNumber').html(blockNumber);
+				})
 
-      
-        <section id="downloads">
-          <span class="inner">
-            <a href="https://github.com/pages-themes/merlot/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/pages-themes/merlot/tarball/master" class="tgz"><em>download</em> .TGZ</a>
-          </span>
-        </section>
-      
+				/////////////////////////////
+				// Sample of a contract's address deployed in Ropsten test network
+				 var address = "0xeCF9e79d6d9214B29cA6988Cb2b88e09123ceD34"
+				// Deployed Contract's Adress, substitute here with your contract's address
+				// var address = "0xB40dCa2c4b6B84C1131eBDdCf3df6D2f294B0ba8"
+				$('#address').html(address)
+				// Deployed Contract's ABI
+				var abi = [
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "voteNo",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "voteYes",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"name": "_subject",
+				"type": "string"
+			},
+			{
+				"name": "_referedumDurationInDays",
+				"type": "uint256"
+			},
+			{
+				"name": "_minVotos",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "GetMinVotos",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "GetReferendumEnd",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "GetSubject",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "Reveal",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "voters",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
 
+				// connect, via web3, your variable contract to the deployed contract, using his ABI and address
+				contract = new web3.eth.Contract(abi, address);
+                contract.methods.GetSubject().call().then(function(subject)
+                {
+                    $('#subject').html(subject);
+                })
+			})
 
-      <span class="banner-fix"></span>
+			$('#voteYes').click(function()
+			{
+				M.toast({html:'Transaction received and will be mined!'});
+				console.log("Transaction received and will be mined!");
 
+				web3.eth.getAccounts().then(function(accounts)
+				{
+					var acc = accounts[0];
+					return contract.methods.voteYes().send({from: acc});
+				}).then(function(tx)
+				{
+					console.log(tx);
+					if(!alert("Transaction mined at block " + tx.blockNumber + "\nBlockHash = " + tx.blockHash)){window.location.reload();}
+				}).catch(function(tx)
+				{
+					if (tx){
+						alert('Some error has occurred, go to console!')
+					}
+					console.log(tx);
+					M.toast({html:tx})
+				})
+			})
 
-      <section id="main_content">
-        <p>Text can be <strong>bold</strong>, <em>italic</em>, or <del>strikethrough</del>.</p>
+			$('#voteNo').click(function()
+			{
+				M.toast({html:'Transaction received and will be mined!'});
+				console.log("Transaction received and will be mined!");
 
-<p><a href="./another-page.html">Link to another page</a>.</p>
-
-<p>There should be whitespace between paragraphs.</p>
-
-<p>There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.</p>
-
-<h1 id="header-1">Header 1</h1>
-
-<p>This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.</p>
-
-<h2 id="header-2">Header 2</h2>
-
-<blockquote>
-  <p>This is a blockquote following a header.</p>
-
-  <p>When something is important enough, you do it even if the odds are not in your favor.</p>
-</blockquote>
-
-<h3 id="header-3">Header 3</h3>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Javascript code with syntax highlighting.</span>
-<span class="kd">var</span> <span class="nx">fun</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">lang</span><span class="p">(</span><span class="nx">l</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">dateformat</span><span class="p">.</span><span class="nx">i18n</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./lang/</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">l</span><span class="p">)</span>
-  <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Ruby code with syntax highlighting</span>
-<span class="no">GitHubPages</span><span class="o">::</span><span class="no">Dependencies</span><span class="p">.</span><span class="nf">gems</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">gem</span><span class="p">,</span> <span class="n">version</span><span class="o">|</span>
-  <span class="n">s</span><span class="p">.</span><span class="nf">add_dependency</span><span class="p">(</span><span class="n">gem</span><span class="p">,</span> <span class="s2">"= </span><span class="si">#{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<h4 id="header-4">Header 4</h4>
-
-<ul>
-  <li>This is an unordered list following a header.</li>
-  <li>This is an unordered list following a header.</li>
-  <li>This is an unordered list following a header.</li>
-</ul>
-
-<h5 id="header-5">Header 5</h5>
-
-<ol>
-  <li>This is an ordered list following a header.</li>
-  <li>This is an ordered list following a header.</li>
-  <li>This is an ordered list following a header.</li>
-</ol>
-
-<h6 id="header-6">Header 6</h6>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left">head1</th>
-      <th style="text-align: left">head two</th>
-      <th style="text-align: left">three</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left">ok</td>
-      <td style="text-align: left">good swedish fish</td>
-      <td style="text-align: left">nice</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">out of stock</td>
-      <td style="text-align: left">good and plenty</td>
-      <td style="text-align: left">nice</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">ok</td>
-      <td style="text-align: left">good <code class="language-plaintext highlighter-rouge">oreos</code></td>
-      <td style="text-align: left">hmm</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">ok</td>
-      <td style="text-align: left">good <code class="language-plaintext highlighter-rouge">zoute</code> drop</td>
-      <td style="text-align: left">yumm</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="theres-a-horizontal-rule-below-this">There’s a horizontal rule below this.</h3>
-
-<hr />
-
-<h3 id="here-is-an-unordered-list">Here is an unordered list:</h3>
-
-<ul>
-  <li>Item foo</li>
-  <li>Item bar</li>
-  <li>Item baz</li>
-  <li>Item zip</li>
-</ul>
-
-<h3 id="and-an-ordered-list">And an ordered list:</h3>
-
-<ol>
-  <li>Item one</li>
-  <li>Item two</li>
-  <li>Item three</li>
-  <li>Item four</li>
-</ol>
-
-<h3 id="and-a-nested-list">And a nested list:</h3>
-
-<ul>
-  <li>level 1 item
-    <ul>
-      <li>level 2 item</li>
-      <li>level 2 item
-        <ul>
-          <li>level 3 item</li>
-          <li>level 3 item</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>level 1 item
-    <ul>
-      <li>level 2 item</li>
-      <li>level 2 item</li>
-      <li>level 2 item</li>
-    </ul>
-  </li>
-  <li>level 1 item
-    <ul>
-      <li>level 2 item</li>
-      <li>level 2 item</li>
-    </ul>
-  </li>
-  <li>level 1 item</li>
-</ul>
-
-<h3 id="small-image">Small image</h3>
-
-<p><img src="https://github.githubassets.com/images/icons/emoji/octocat.png" alt="Octocat" /></p>
-
-<h3 id="large-image">Large image</h3>
-
-<p><img src="https://guides.github.com/activities/hello-world/branching.png" alt="Branching" /></p>
-
-<h3 id="definition-lists-can-be-used-with-html-syntax">Definition lists can be used with HTML syntax.</h3>
-
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The final element.
-</code></pre></div></div>
-
-      </section>
-
-      <footer>
-        <span class="ribbon-outer">
-          <span class="ribbon-inner">
-            
-              <p>this project by <a href="https://github.com/pages-themes">pages-themes</a> can be found on <a href="https://github.com/pages-themes/merlot">GitHub</a></p>
-            
-            
-          </span>
-          <span class="left-tail"></span>
-          <span class="right-tail"></span>
-        </span>
-        <p>Generated with <a href="https://pages.github.com">GitHub Pages</a> using Merlot</p>
-        <span class="octocat"></span>
-      </footer>
-
-    </div>
-
-    
-  </body>
+				web3.eth.getAccounts().then(function(accounts)
+				{
+					var acc = accounts[0];
+					return contract.methods.voteNo().send({from: acc});
+				}).then(function(tx)
+				{
+					console.log(tx);
+					if(!alert("Transaction mined at block " + tx.blockNumber + "\nBlockHash = " + tx.blockHash)){window.location.reload();}
+				}).catch(function(tx)
+				{
+					if (tx){
+						alert('Some error has occurred, go to console!')
+					}
+					console.log(tx);
+					M.toast({html:tx})
+				})
+			})
+        </script>
+    </body>
 </html>
