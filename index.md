@@ -48,7 +48,7 @@
 
 				/////////////////////////////
 				// Sample of a contract's address deployed in Ropsten test network
-				 var address = "0x81A2245B808ca7dDE5a78053a2e80F5f4c496A6d"
+				 var address = "0xA14C2822f1E20b86B9e6F4ba8bC5445A80F3dcC7"
 				// Deployed Contract's Adress, substitute here with your contract's address
 				// var address = "0xB40dCa2c4b6B84C1131eBDdCf3df6D2f294B0ba8"
 				$('#address').html(address)
