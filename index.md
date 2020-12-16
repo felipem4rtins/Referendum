@@ -1,7 +1,7 @@
 <html>
     <body>
         <div>
-  			<p><font size="3">Você é a favor do(a) <a id='subject'></a>?</p>
+  			<p>Você é a favor do(a) <a id='subject'></a>?</p>
   			<button id='voteYes'>Sim</button>
   			<button id='voteNo'>Não</button>
   			<p>Conta Conectada: <a id='coinbase'></a></p>
